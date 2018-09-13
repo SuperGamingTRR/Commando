@@ -2,6 +2,7 @@ const discord = require('discord.js');
 const CommandRegistry = require('./registry');
 const CommandDispatcher = require('./dispatcher');
 const GuildSettingsHelper = require('./providers/helper');
+const { oneLine } = require('common-tags');
 
 /**
  * Discord.js Client with a command framework
@@ -76,13 +77,13 @@ class CommandoClient extends discord.Client {
 				if(options.owner instanceof Array || options.owner instanceof Set) {
 					for(const owner of options.owner) {
 						this.fetchUser(owner).catch(err => {
-							this.emit('warn', `Unable to fetch owner ${owner}.`);
+							this.emit('warn', `${owner} adlı sahibin bilgileri alınamıyor.`);
 							this.emit('error', err);
 						});
 					}
 				} else {
 					this.fetchUser(options.owner).catch(err => {
-						this.emit('warn', `Unable to fetch owner ${options.owner}.`);
+						this.emit('warn', `${options.owner} adlı sahibin bilgileri alınamıyor.`);
 						this.emit('error', err);
 					});
 				}
@@ -146,16 +147,18 @@ class CommandoClient extends discord.Client {
 		this.provider = provider;
 
 		if(this.readyTimestamp) {
-			this.emit('debug', `Provider set to ${provider.constructor.name} - initialising...`);
+			this.emit('debug', oneLine`Veritabanı sağlayıcısı ${provider.constructor.name} adlı sağlayıcıya ayarlandı
+			- başlatılıyor...`);
 			await provider.init(this);
-			this.emit('debug', 'Provider finished initialisation.');
+			this.emit('debug', 'Sağlayıcı başlatmayı tamamladı.');
 			return undefined;
 		}
 
-		this.emit('debug', `Provider set to ${provider.constructor.name} - will initialise once ready.`);
+		this.emit('debug', oneLine`Veritabanı sağlayıcısı ${provider.constructor.name} adlı sağlayıcıya ayarlandı
+		- hazır olduğunda bir kez başlatılacak.`);
 		await new Promise(resolve => {
 			this.once('ready', () => {
-				this.emit('debug', `Initialising provider...`);
+				this.emit('debug', `Başlatılıyor...`);
 				resolve(provider.init(this));
 			});
 		});
@@ -166,7 +169,7 @@ class CommandoClient extends discord.Client {
 		 * @param {SettingsProvider} provider - Provider that was initialised
 		 */
 		this.emit('providerReady', provider);
-		this.emit('debug', 'Provider finished initialisation.');
+		this.emit('debug', 'Veritabanı sağlayıcısı başlatmayı tamamladı.');
 		return undefined;
 	}
 

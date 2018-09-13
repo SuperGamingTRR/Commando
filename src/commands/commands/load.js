@@ -6,28 +6,28 @@ module.exports = class LoadCommandCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: 'load',
-			aliases: ['load-command'],
+			aliases: ['load-command', 'yükle', 'komutyükle'],
 			group: 'commands',
 			memberName: 'load',
-			description: 'Loads a new command.',
+			description: 'Yeni komut yükler.',
 			details: oneLine`
-				The argument must be full name of the command in the format of \`group:memberName\`.
-				Only the bot owner(s) may use this command.
+				Argüman komutun tam adıyla birlikte \`[komut]:[grup adı]\` biçiminde olmalıdır.
+				Sadece botun yapımcıları bu komutu kullanabilir..
 			`,
-			examples: ['load some-command'],
+			examples: ['load prefix:util'],
 			ownerOnly: true,
 			guarded: true,
 
 			args: [
 				{
 					key: 'command',
-					prompt: 'Which command would you like to load?',
+					prompt: 'Hangi komutu yüklemek istersiniz?',
 					validate: val => new Promise(resolve => {
 						if(!val) return resolve(false);
 						const split = val.split(':');
 						if(split.length !== 2) return resolve(false);
 						if(this.client.registry.findCommands(val).length > 0) {
-							return resolve('That command is already registered.');
+							return resolve('Bu komut zaten veritabanına kaydedilmiş.');
 						}
 						const cmdPath = this.client.registry.resolveCommandPath(split[0], split[1]);
 						fs.access(cmdPath, fs.constants.R_OK, err => err ? resolve(false) : resolve(true));
@@ -58,14 +58,14 @@ module.exports = class LoadCommandCommand extends Command {
 					}
 				`);
 			} catch(err) {
-				this.client.emit('warn', `Error when broadcasting command load to other shards`);
+				this.client.emit('warn', `Komut yüklü diğer shardlara yayınlanırken bir hata oluştu.`);
 				this.client.emit('error', err);
-				await msg.reply(`Loaded \`${command.name}\` command, but failed to load on other shards.`);
+				await msg.reply(`\`${command.name}\` adlı komut yüklendi, fakat diğer shardlarda yüklenirken bir hata oluştu.`);
 				return null;
 			}
 		}
 
-		await msg.reply(`Loaded \`${command.name}\` command${this.client.shard ? ' on all shards' : ''}.`);
+		await msg.reply(`\`${command.name}\` komutu${this.client.shard ? ' tüm shardlarda' : ''} başarıyla yüklendi.`);
 		return null;
 	}
 };

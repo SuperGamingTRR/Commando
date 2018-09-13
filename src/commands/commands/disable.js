@@ -5,22 +5,22 @@ module.exports = class DisableCommandCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: 'disable',
-			aliases: ['disable-command', 'cmd-off', 'command-off'],
+			aliases: ['disable-command', 'cmd-off', 'command-off', 'devredışı', 'devredışıbırak'],
 			group: 'commands',
 			memberName: 'disable',
-			description: 'Disables a command or command group.',
+			description: 'Bir komutu veya komut grubunu devre dışı bırakır.',
 			details: oneLine`
-				The argument must be the name/ID (partial or whole) of a command or command group.
-				Only administrators may use this command.
+				Argüman komutun veya komut grubunun adı/ID'si (kısmi yada bütün) olmak zorundadır.
+				Sadece botun yapımcıları bu komutu kullanabilir.
 			`,
-			examples: ['disable util', 'disable Utility', 'disable prefix'],
+			examples: ['disable [komut]', 'disable [grup]', 'disable prefix'],
 			guarded: true,
 
 			args: [
 				{
 					key: 'cmdOrGrp',
 					label: 'command/group',
-					prompt: 'Which command or group would you like to disable?',
+					prompt: 'Hangi komutu veya komut grubunu devre dışı bırakmak istiyorsunuz?',
 					type: 'group|command'
 				}
 			]
@@ -35,15 +35,17 @@ module.exports = class DisableCommandCommand extends Command {
 	run(msg, args) {
 		if(!args.cmdOrGrp.isEnabledIn(msg.guild, true)) {
 			return msg.reply(
-				`The \`${args.cmdOrGrp.name}\` ${args.cmdOrGrp.group ? 'command' : 'group'} is already disabled.`
+				`\`${args.cmdOrGrp.name}\` adlı ${args.cmdOrGrp.group ? 'komut' : 'komut grubu'} zaten devre dışı bırakılmış.`
 			);
 		}
 		if(args.cmdOrGrp.guarded) {
 			return msg.reply(
-				`You cannot disable the \`${args.cmdOrGrp.name}\` ${args.cmdOrGrp.group ? 'command' : 'group'}.`
+				`\`${args.cmdOrGrp.name}\` adlı ${args.cmdOrGrp.group ? 'komutu' : 'komut grubunu'} devre dışı bırakamazsınız.`
 			);
 		}
 		args.cmdOrGrp.setEnabledIn(msg.guild, false);
-		return msg.reply(`Disabled the \`${args.cmdOrGrp.name}\` ${args.cmdOrGrp.group ? 'command' : 'group'}.`);
+		return msg.reply(oneLine`
+		\`${args.cmdOrGrp.name}\` adlı ${args.cmdOrGrp.group ? 'komut' : 'komut grubu'} başarıyla devre dışı bırakıldı.
+		`);
 	}
 };

@@ -3,8 +3,8 @@ const ArgumentType = require('./base');
 class BooleanArgumentType extends ArgumentType {
 	constructor(client) {
 		super(client, 'boolean');
-		this.truthy = new Set(['true', 't', 'yes', 'y', 'on', 'enable', 'enabled', '1', '+']);
-		this.falsy = new Set(['false', 'f', 'no', 'n', 'off', 'disable', 'disabled', '0', '-']);
+		this.truthy = new Set(['true', 't', 'yes', 'y', 'on', 'enable', 'enabled', '1', '+', 'evet']);
+		this.falsy = new Set(['false', 'f', 'no', 'n', 'off', 'disable', 'disabled', '0', '-', 'hayır']);
 	}
 
 	validate(value) {
@@ -16,7 +16,7 @@ class BooleanArgumentType extends ArgumentType {
 		const lc = value.toLowerCase();
 		if(this.truthy.has(lc)) return true;
 		if(this.falsy.has(lc)) return false;
-		throw new RangeError('Unknown boolean value.');
+		throw new RangeError('Geçersiz boolean değeri.');
 	}
 }
 

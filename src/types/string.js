@@ -8,10 +8,10 @@ class StringArgumentType extends ArgumentType {
 	validate(value, msg, arg) {
 		if(arg.oneOf && !arg.oneOf.includes(value.toLowerCase())) return false;
 		if(arg.min !== null && typeof arg.min !== 'undefined' && value.length < arg.min) {
-			return `Please keep the ${arg.label} above or exactly ${arg.min} characters.`;
+			return `Lütfen istenen \`${arg.label}\` değerini yukarıda veya tam olarak ${arg.min} karakterde tutun.`;
 		}
 		if(arg.max !== null && typeof arg.max !== 'undefined' && value.length > arg.max) {
-			return `Please keep the ${arg.label} below or exactly ${arg.max} characters.`;
+			return `Lütfen istenen \`${arg.label}\` değerini altında veya tam olarak ${arg.max} karakterde tutun.`;
 		}
 		return true;
 	}

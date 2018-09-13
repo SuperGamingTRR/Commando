@@ -130,12 +130,12 @@ class CommandMessage {
 			 * (built-in reasons are `guildOnly`, `permission`, and `throttling`)
 			 */
 			this.client.emit('commandBlocked', this, 'guildOnly');
-			return this.reply(`The \`${this.command.name}\` command must be used in a server channel.`);
+			return this.reply(`\`${this.command.name}\` adlı komut sadece sunucularda kullanılabilir.`);
 		}
 
 		if(this.command.nsfw && !this.message.channel.nsfw) {
 			this.client.emit('commandBlocked', this, 'nsfw');
-			return this.reply(`The \`${this.command.name}\` command can only be used in NSFW channels.`);
+			return this.reply(`\`${this.command.name}\` adlı komut sadece NSFW kanallarında kullanılabilir.`);
 		}
 
 		// Ensure the user has permission to use the command
@@ -143,7 +143,7 @@ class CommandMessage {
 		if(!hasPermission || typeof hasPermission === 'string') {
 			this.client.emit('commandBlocked', this, 'permission');
 			if(typeof hasPermission === 'string') return this.reply(hasPermission);
-			else return this.reply(`You do not have permission to use the \`${this.command.name}\` command.`);
+			else return this.reply(`\`${this.command.name}\` adlı komutu kullanmaya izniniz yok.`);
 		}
 
 		// Ensure the client user has the required permissions
@@ -153,11 +153,12 @@ class CommandMessage {
 				this.client.emit('commandBlocked', this, 'clientPermissions');
 				if(missing.length === 1) {
 					return this.reply(
-						`I need the "${permissions[missing[0]]}" permission for the \`${this.command.name}\` command to work.`
+						oneLine`\`${this.command.name}\` adlı komutu çalıştırabilmek için
+						"${permissions[missing[0]]}" adlı izne ihtiyacım var.`
 					);
 				}
 				return this.reply(oneLine`
-					I need the following permissions for the \`${this.command.name}\` command to work:
+					\`${this.command.name}\` adlı komutu çalıştırabilmek için bu izinlere ihtiyacım var:
 					${missing.map(perm => permissions[perm]).join(', ')}
 				`);
 			}
@@ -169,7 +170,7 @@ class CommandMessage {
 			const remaining = (throttle.start + (this.command.throttling.duration * 1000) - Date.now()) / 1000;
 			this.client.emit('commandBlocked', this, 'throttling');
 			return this.reply(
-				`You may not use the \`${this.command.name}\` command again for another ${remaining.toFixed(1)} seconds.`
+				`\`${this.command.name}\` adlı komutu tekrar kullanabilmek için ${remaining.toFixed(1)} saniye beklemelisiniz.`
 			);
 		}
 
@@ -186,7 +187,7 @@ class CommandMessage {
 					const err = new CommandFormatError(this);
 					return this.reply(err.message);
 				}
-				return this.reply('Cancelled command.');
+				return this.reply('Komut iptal edildi.');
 			}
 			args = result.values;
 		}
@@ -197,7 +198,7 @@ class CommandMessage {
 		if(throttle) throttle.usages++;
 		const typingCount = this.message.channel.typingCount;
 		try {
-			this.client.emit('debug', `Running command ${this.command.groupID}:${this.command.memberName}.`);
+			this.client.emit('debug', `${this.command.groupID}:${this.command.memberName} adlı komut çalıştırılıyor...`);
 			const promise = this.command.run(this, args, fromPattern);
 			/**
 			 * Emitted when running a command
@@ -241,9 +242,11 @@ class CommandMessage {
 
 				const invite = this.client.options.invite;
 				return this.reply(stripIndents`
-					An error occurred while running the command: \`${err.name}: ${err.message}\`
-					You shouldn't ever receive an error like this.
-					Please contact ${ownerList || 'the bot owner'}${invite ? ` in this server: ${invite}` : '.'}
+					Komut çalıştırılırken bir hata oluştu:
+					\`${err.name}: ${err.message}\`
+					Böyle bir hata almamanız gerekiyordu.
+					Lütfen ${ownerList || 'botun yapımcısı'} ile iletişime geçin.
+					${invite ? `Yapımcı ile bu sunucuda iletişime geçebilirsiniz: ${invite}` : ''}
 				`);
 			}
 		}

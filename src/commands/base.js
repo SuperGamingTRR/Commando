@@ -233,17 +233,17 @@ class Command {
 		if(ownerOverride && this.client.isOwner(message.author)) return true;
 
 		if(this.ownerOnly && (ownerOverride || !this.client.isOwner(message.author))) {
-			return `The \`${this.name}\` command can only be used by the bot owner.`;
+			return `\`${this.name}\` adlı komut sadece botun yapımcıları tarafından kullanılabilir.`;
 		}
 
 		if(message.channel.type === 'text' && this.userPermissions) {
 			const missing = message.channel.permissionsFor(message.author).missing(this.userPermissions);
 			if(missing.length > 0) {
 				if(missing.length === 1) {
-					return `The \`${this.name}\` command requires you to have the "${permissions[missing[0]]}" permission.`;
+					return `\`${this.name}\` komutunu kullanabilmek için "${permissions[missing[0]]}" iznine sahip olmalısınız.`;
 				}
 				return oneLine`
-					The \`${this.name}\` command requires you to have the following permissions:
+					\`${this.name}\` komutunu kullanabilmek için bu izinlere sahip olmalısınız:
 					${missing.map(perm => permissions[perm]).join(', ')}
 				`;
 			}
@@ -379,7 +379,7 @@ class Command {
 	 */
 	unload() {
 		const cmdPath = this.client.registry.resolveCommandPath(this.groupID, this.memberName);
-		if(!require.cache[cmdPath]) throw new Error('Command cannot be unloaded.');
+		if(!require.cache[cmdPath]) throw new Error('Komut devreden çıkarılamaz.');
 		delete require.cache[cmdPath];
 		this.client.registry.unregisterCommand(this);
 	}

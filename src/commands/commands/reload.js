@@ -5,16 +5,16 @@ module.exports = class ReloadCommandCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: 'reload',
-			aliases: ['reload-command'],
+			aliases: ['reload-command', 'yenidenyükle', 'tekraryükle'],
 			group: 'commands',
 			memberName: 'reload',
-			description: 'Reloads a command or command group.',
+			description: 'Bir komutu veya komut grubunu yeniden yükler.',
 			details: oneLine`
-				The argument must be the name/ID (partial or whole) of a command or command group.
-				Providing a command group will reload all of the commands in that group.
-				Only the bot owner(s) may use this command.
+				Argüman komutun adı/ID'si (kısmi yada bütün) olmak zorundadır.
+				Bir komut grubu belirtmek o gruptaki tüm komutları yeniden yükler.
+				Sadece botun yapımcıları bu komutu kullanabilir.
 			`,
-			examples: ['reload some-command'],
+			examples: ['reload [komut adı]', 'reload [grup adı]', 'reload prefix', 'reload Utility'],
 			ownerOnly: true,
 			guarded: true,
 
@@ -22,7 +22,7 @@ module.exports = class ReloadCommandCommand extends Command {
 				{
 					key: 'cmdOrGrp',
 					label: 'command/group',
-					prompt: 'Which command or group would you like to reload?',
+					prompt: 'Hangi komutu veya komut grubunu yeniden yüklemek istersiniz?',
 					type: 'group|command'
 				}
 			]
@@ -42,13 +42,15 @@ module.exports = class ReloadCommandCommand extends Command {
 					}
 				`);
 			} catch(err) {
-				this.client.emit('warn', `Error when broadcasting command reload to other shards`);
+				this.client.emit('warn', `Komut yeniden yükleme isteği diğer shardlara yayınlanırken bir hata oluştu.`);
 				this.client.emit('error', err);
 				if(isCmd) {
-					await msg.reply(`Reloaded \`${cmdOrGrp.name}\` command, but failed to reload on other shards.`);
+					await msg.reply(oneLine`\`${cmdOrGrp.name}\` komutu yeniden yüklendi,
+					fakat diğer shardlarda yeniden yüklenirken bir hata oluştu.`);
 				} else {
 					await msg.reply(
-						`Reloaded all of the commands in the \`${cmdOrGrp.name}\` group, but failed to reload on other shards.`
+						oneLine`\`${cmdOrGrp.name}\` grubundaki tüm komutlar yeniden yüklendi,
+						fakat diğer shardlarda yeniden yüklenirken bir hatayla karşılaşıldı..`
 					);
 				}
 				return null;
@@ -56,10 +58,12 @@ module.exports = class ReloadCommandCommand extends Command {
 		}
 
 		if(isCmd) {
-			await msg.reply(`Reloaded \`${cmdOrGrp.name}\` command${this.client.shard ? ' on all shards' : ''}.`);
+			await msg.reply(oneLine`\`${cmdOrGrp.name}\` adlı komut${this.client.shard ? ' tüm shardlarda' : ''}
+			başarıyla yeniden yüklendi.`);
 		} else {
 			await msg.reply(
-				`Reloaded all of the commands in the \`${cmdOrGrp.name}\` group${this.client.shard ? ' on all shards' : ''}.`
+				oneLine`\`${cmdOrGrp.name}\` grubundaki tüm komutlar${this.client.shard ? ' tüm shardlarda' : ''}
+				başarıyla yeniden yüklendi.`
 			);
 		}
 		return null;

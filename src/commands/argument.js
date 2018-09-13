@@ -179,10 +179,10 @@ class Argument {
 
 			// Prompt the user for a new value
 			prompts.push(await msg.reply(stripIndents`
-				${empty ? this.prompt : valid ? valid : `You provided an invalid ${this.label}. Please try again.`}
+				${empty ? this.prompt : valid ? valid : `Geçersiz bir ${this.label} girdiniz. Lütfen tekrar deneyin.`}
 				${oneLine`
-					Respond with \`cancel\` to cancel the command.
-					${wait ? `The command will automatically be cancelled in ${this.wait} seconds.` : ''}
+					Komutu iptal etmek için \`iptal\` diye cevaplayın.
+					${wait ? `Komut ${this.wait} saniye sonra otomatik olarak iptal edilecektir.` : ''}
 				`}
 			`));
 
@@ -206,7 +206,7 @@ class Argument {
 			}
 
 			// See if they want to cancel
-			if(value.toLowerCase() === 'cancel') {
+			if(value.toLowerCase() === 'iptal') {
 				return {
 					value: null,
 					cancelled: 'user',
@@ -265,21 +265,21 @@ class Argument {
 					const escaped = escapeMarkdown(value).replace(/@/g, '@\u200b');
 					prompts.push(await msg.reply(stripIndents`
 						${valid ? valid : oneLine`
-							You provided an invalid ${this.label},
-							"${escaped.length < 1850 ? escaped : '[too long to show]'}".
-							Please try again.
+							Geçersiz bir ${this.label} girdiniz,
+							"${escaped.length < 1850 ? escaped : '[göstermek için çok uzun]'}".
+							Lütfen tekrar deneyin.
 						`}
 						${oneLine`
-							Respond with \`cancel\` to cancel the command, or \`finish\` to finish entry up to this point.
-							${wait ? `The command will automatically be cancelled in ${this.wait} seconds.` : ''}
+							\`iptal\` yazarak komutu iptal edebilir, yada \`bitir\` yazarak bu noktada giriş yapmayı bitirebilirsiniz.
+							${wait ? `Komut ${this.wait} saniye sonra otomatik olarak iptal edilecektir.` : ''}
 						`}
 					`));
 				} else if(results.length === 0) {
 					prompts.push(await msg.reply(stripIndents`
 						${this.prompt}
 						${oneLine`
-							Respond with \`cancel\` to cancel the command, or \`finish\` to finish entry.
-							${wait ? `The command will automatically be cancelled in ${this.wait} seconds, unless you respond.` : ''}
+							\`iptal\` yazarak komutu iptal edebilir, yada \`bitir\` yazarak giriş yapmayı bitirebilirsiniz.
+							${wait ? `Komut ${this.wait} saniye sonra cevap vermezseniz otomatik olarak iptal edilecektir.` : ''}
 						`}
 					`));
 				}
@@ -305,7 +305,7 @@ class Argument {
 
 				// See if they want to finish or cancel
 				const lc = value.toLowerCase();
-				if(lc === 'finish') {
+				if(lc === 'bitir') {
 					return {
 						value: results.length > 0 ? results : null,
 						cancelled: results.length > 0 ? null : 'user',
@@ -313,7 +313,7 @@ class Argument {
 						answers
 					};
 				}
-				if(lc === 'cancel') {
+				if(lc === 'iptal') {
 					return {
 						value: null,
 						cancelled: 'user',

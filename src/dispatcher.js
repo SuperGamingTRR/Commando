@@ -1,5 +1,6 @@
 const escapeRegex = require('escape-string-regexp');
 const CommandMessage = require('./commands/message');
+const { oneLine } = require('common-tags');
 
 /** Handles parsing messages and running commands from them */
 class CommandDispatcher {
@@ -122,7 +123,9 @@ class CommandDispatcher {
 			if(!inhibited) {
 				if(cmdMsg.command) {
 					if(!cmdMsg.command.isEnabledIn(message.guild)) {
-						responses = await cmdMsg.reply(`The \`${cmdMsg.command.name}\` command is disabled.`);
+						responses = await cmdMsg.reply(oneLine`
+						\`${cmdMsg.command.name}\` adlı komut devre dışı bırakılmış. Komut şu an kullanılamaz.
+						`);
 					} else if(!oldMessage || typeof oldCmdMsg !== 'undefined') {
 						responses = await cmdMsg.run();
 						if(typeof responses === 'undefined') responses = null; // eslint-disable-line max-depth
@@ -136,11 +139,11 @@ class CommandDispatcher {
 					this.client.emit('unknownCommand', cmdMsg);
 					if(this.client.options.unknownCommandResponse) {
 						responses = await cmdMsg.reply(
-							`Unknown command. Use ${cmdMsg.anyUsage(
-								'help',
+							`Bilinmeyen komut. ${cmdMsg.anyUsage(
+								'yardım',
 								message.guild ? undefined : null,
 								message.guild ? undefined : null
-							)} to view the list of all commands.`
+							)} kullanarak tüm komutların listesini görebilirsiniz.`
 						);
 					}
 				}
@@ -274,7 +277,7 @@ class CommandDispatcher {
 			pattern = new RegExp(`(^<@!?${this.client.user.id}>\\s+)([^\\s]+)`, 'i');
 		}
 		this._commandPatterns[prefix] = pattern;
-		this.client.emit('debug', `Built command pattern for prefix "${prefix}": ${pattern}`);
+		this.client.emit('debug', `Önek için komut deseni ayarlandı: "${prefix}": ${pattern}`);
 		return pattern;
 	}
 }

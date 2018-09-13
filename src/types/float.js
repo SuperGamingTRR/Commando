@@ -10,10 +10,10 @@ class FloatArgumentType extends ArgumentType {
 		if(Number.isNaN(float)) return false;
 		if(arg.oneOf && !arg.oneOf.includes(float)) return false;
 		if(arg.min !== null && typeof arg.min !== 'undefined' && float < arg.min) {
-			return `Please enter a number above or exactly ${arg.min}.`;
+			return `Lütfen daha üstte bir değer girin yada tam ${arg.min} değerini girin.`;
 		}
 		if(arg.max !== null && typeof arg.max !== 'undefined' && float > arg.max) {
-			return `Please enter a number below or exactly ${arg.max}.`;
+			return `Lütfen daha altta bir değer girin yada tam ${arg.max} değerini girin.`;
 		}
 		return true;
 	}

@@ -5,22 +5,22 @@ module.exports = class EnableCommandCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: 'enable',
-			aliases: ['enable-command', 'cmd-on', 'command-on'],
+			aliases: ['enable-command', 'cmd-on', 'command-on', 'etkinleştir'],
 			group: 'commands',
 			memberName: 'enable',
-			description: 'Enables a command or command group.',
+			description: 'Bir komutu veya komut grubunu etkinleştirir.',
 			details: oneLine`
-				The argument must be the name/ID (partial or whole) of a command or command group.
-				Only administrators may use this command.
+				Argüman komutun veya komut grubunun adı / ID 'si (kısmi yada bütün) olmak zorundadır.
+				Sadece botun yapımcıları bu komutu kullanabilir.
 			`,
-			examples: ['enable util', 'enable Utility', 'enable prefix'],
+			examples: ['enable [komut]', 'enable [grup]', 'enable prefix'],
 			guarded: true,
 
 			args: [
 				{
 					key: 'cmdOrGrp',
 					label: 'command/group',
-					prompt: 'Which command or group would you like to enable?',
+					prompt: 'Hangi komutu veya komut grubunu etkinleştirmek istersiniz?',
 					type: 'group|command'
 				}
 			]
@@ -36,15 +36,17 @@ module.exports = class EnableCommandCommand extends Command {
 		const group = args.cmdOrGrp.group;
 		if(args.cmdOrGrp.isEnabledIn(msg.guild, true)) {
 			return msg.reply(
-				`The \`${args.cmdOrGrp.name}\` ${args.cmdOrGrp.group ? 'command' : 'group'} is already enabled${
-					group && !group.enabled ? `, but the \`${group.name}\` group is disabled, so it still can't be used` : ''
+				oneLine`\`${args.cmdOrGrp.name}\` adlı ${args.cmdOrGrp.group ? 'komut' : 'komut grubu'} zaten etkinleştirilmiş${
+					group && !group.enabled ? `, fakat \`${group.name}\` adlı grup devre dışı,
+					bu yüzden komut hala kullanılamaz` : ''
 				}.`
 			);
 		}
 		args.cmdOrGrp.setEnabledIn(msg.guild, true);
 		return msg.reply(
-			`Enabled the \`${args.cmdOrGrp.name}\` ${group ? 'command' : 'group'}${
-				group && !group.enabled ? `, but the \`${group.name}\` group is disabled, so it still can't be used` : ''
+			oneLine`\`${args.cmdOrGrp.name}\` adlı ${group ? 'komut' : 'komut grubu'} etkinleştirildi${
+				group && !group.enabled ? `, fakat \`${group.name}\` adlı grup devre dışı,
+				bu yüzden komut hala kullanılamaz` : ''
 			}.`
 		);
 	}

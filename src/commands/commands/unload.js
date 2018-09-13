@@ -5,22 +5,22 @@ module.exports = class UnloadCommandCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: 'unload',
-			aliases: ['unload-command'],
+			aliases: ['unload-command', 'devredışıbırak', 'devredışı'],
 			group: 'commands',
 			memberName: 'unload',
-			description: 'Unloads a command.',
+			description: 'Bir komutu devreden çıkarır.',
 			details: oneLine`
-				The argument must be the name/ID (partial or whole) of a command.
-				Only the bot owner(s) may use this command.
+				Argüman komutun adı/ID'si (kısmi yada bütün) olmak zorundadır.
+				Sadece botun yapımcıları bu komutu kullanabilir.
 			`,
-			examples: ['unload some-command'],
+			examples: ['unload [komut adı]', 'unload prefix'],
 			ownerOnly: true,
 			guarded: true,
 
 			args: [
 				{
 					key: 'command',
-					prompt: 'Which command would you like to unload?',
+					prompt: 'Hangi komutu devreden çıkarmak istiyorsunuz?',
 					type: 'command'
 				}
 			]
@@ -36,14 +36,16 @@ module.exports = class UnloadCommandCommand extends Command {
 					if(this.shard.id !== ${this.client.shard.id}) this.registry.commands.get('${args.command.name}').unload();
 				`);
 			} catch(err) {
-				this.client.emit('warn', `Error when broadcasting command unload to other shards`);
+				this.client.emit('warn', `Komutu devreden çıkarma isteği tüm shardlara gönderilirken bir hatayla sonuçlandı.`);
 				this.client.emit('error', err);
-				await msg.reply(`Unloaded \`${args.command.name}\` command, but failed to unload on other shards.`);
+				await msg.reply(oneLine`\`${args.command.name}\` komutu devreden çıkarıldı,
+				fakat diğer shardlarda devreden çıkarma işlemi hatayla sonuçlandı.`);
 				return null;
 			}
 		}
 
-		await msg.reply(`Unloaded \`${args.command.name}\` command${this.client.shard ? ' on all shards' : ''}.`);
+		await msg.reply(oneLine`\`${args.command.name}\` komutu${this.client.shard ? ' tüm shardlarda' : ''}
+		başarıyla devreden çıkarıldı.`);
 		return null;
 	}
 };

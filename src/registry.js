@@ -4,6 +4,7 @@ const Command = require('./commands/base');
 const CommandGroup = require('./commands/group');
 const CommandMessage = require('./commands/message');
 const ArgumentType = require('./types/base');
+const { oneLine } = require('common-tags');
 
 /** Handles registration and searching of commands and groups */
 class CommandRegistry {
@@ -81,7 +82,9 @@ class CommandRegistry {
 			const existing = this.groups.get(group.id);
 			if(existing) {
 				existing.name = group.name;
-				this.client.emit('debug', `Group ${group.id} is already registered; renamed it to "${group.name}".`);
+				this.client.emit('debug', oneLine`${group.id} adlı grup zaten kaydedilmiş;
+				ismi "${group.name}" olarak yeniden adlandırıldı.
+				`);
 			} else {
 				this.groups.set(group.id, group);
 				/**
@@ -91,7 +94,7 @@ class CommandRegistry {
 				 * @param {CommandRegistry} registry - Registry that the group was registered to
 				 */
 				this.client.emit('groupRegister', group, this);
-				this.client.emit('debug', `Registered group ${group.id}.`);
+				this.client.emit('debug', `${group.id} adlı grup kaydedildi.`);
 			}
 		}
 		return this;
@@ -119,7 +122,7 @@ class CommandRegistry {
 
 			// Verify that it's an actual command
 			if(!(command instanceof Command)) {
-				this.client.emit('warn', `Attempting to register an invalid command object: ${command}; skipping.`);
+				this.client.emit('warn', `Geçersiz bir komut nesnesi kaydedilmeye çalışıldı: ${command}; atlanıyor...`);
 				continue;
 			}
 
@@ -149,7 +152,7 @@ class CommandRegistry {
 			 * @param {CommandRegistry} registry - Registry that the command was registered to
 			 */
 			this.client.emit('commandRegister', command, this);
-			this.client.emit('debug', `Registered command ${group.id}:${command.memberName}.`);
+			this.client.emit('debug', `Komut kaydedildi: "${group.id}:${command.memberName}"`);
 		}
 
 		return this;
@@ -195,7 +198,10 @@ class CommandRegistry {
 
 			// Verify that it's an actual type
 			if(!(type instanceof ArgumentType)) {
-				this.client.emit('warn', `Attempting to register an invalid argument type object: ${type}; skipping.`);
+				this.client.emit('warn', oneLine`
+				Geçersiz bir argüman türü objesi kaydedilmeye çalışıldı:
+				${type}; atlanıyor...
+				`);
 				continue;
 			}
 
@@ -211,7 +217,7 @@ class CommandRegistry {
 			 * @param {CommandRegistry} registry - Registry that the type was registered to
 			 */
 			this.client.emit('typeRegister', type, this);
-			this.client.emit('debug', `Registered argument type ${type.id}.`);
+			this.client.emit('debug', `${type.id} adlı argüman türü kaydedildi.`);
 		}
 
 		return this;
@@ -251,8 +257,8 @@ class CommandRegistry {
 	 */
 	registerDefaultGroups() {
 		return this.registerGroups([
-			['commands', 'Commands', true],
-			['util', 'Utility']
+			['commands', 'Komutlar', true],
+			['util', 'Faydalı Komutlar']
 		]);
 	}
 
@@ -337,7 +343,7 @@ class CommandRegistry {
 		 * @param {Command} oldCommand - Old command
 		 */
 		this.client.emit('commandReregister', command, oldCommand);
-		this.client.emit('debug', `Reregistered command ${command.groupID}:${command.memberName}.`);
+		this.client.emit('debug', `Komut yeniden kaydedildi: ${command.groupID}:${command.memberName}.`);
 	}
 
 	/**
@@ -353,7 +359,7 @@ class CommandRegistry {
 		 * @param {Command} command - Command that was unregistered
 		 */
 		this.client.emit('commandUnregister', command);
-		this.client.emit('debug', `Unregistered command ${command.groupID}:${command.memberName}.`);
+		this.client.emit('debug', `Komut kayıttan çıkarıldı: ${command.groupID}:${command.memberName}.`);
 	}
 
 	/**

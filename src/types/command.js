@@ -13,7 +13,7 @@ class CommandArgumentType extends ArgumentType {
 		if(commands.length === 0) return false;
 		return commands.length <= 15 ?
 			`${disambiguation(commands.map(cmd => escapeMarkdown(cmd.name)), 'commands', null)}\n` :
-			'Multiple commands found. Please be more specific.';
+			'Birden çok komut bulundu. Lütfen biraz daha açıklayıcı olabilir misiniz?';
 	}
 
 	parse(value) {

@@ -25,7 +25,7 @@ class ChannelArgumentType extends ArgumentType {
 		if(exactChannels.length > 0) channels = exactChannels;
 		return channels.length <= 15 ?
 			`${disambiguation(channels.map(chan => escapeMarkdown(chan.name)), 'channels', null)}\n` :
-			'Multiple channels found. Please be more specific.';
+			'Birden çok kanal bulundu. Lütfen biraz daha açıklayıcı olabilir misiniz?';
 	}
 
 	parse(value, msg) {

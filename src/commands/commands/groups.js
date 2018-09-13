@@ -5,11 +5,11 @@ module.exports = class ListGroupsCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: 'groups',
-			aliases: ['list-groups', 'show-groups'],
+			aliases: ['list-groups', 'show-groups', 'gruplar'],
 			group: 'commands',
 			memberName: 'groups',
-			description: 'Lists all command groups.',
-			details: 'Only administrators may use this command.',
+			description: 'Bütün komut gruplarını listeler.',
+			details: 'Sadece botun yapımcıları bu komutu kullanabilir.',
 			guarded: true
 		});
 	}
@@ -21,9 +21,9 @@ module.exports = class ListGroupsCommand extends Command {
 
 	run(msg) {
 		return msg.reply(stripIndents`
-			__**Groups**__
+			__**Tüm Kayıtlı Komut Grupları**__
 			${this.client.registry.groups.map(grp =>
-				`**${grp.name}:** ${grp.isEnabledIn(msg.guild) ? 'Enabled' : 'Disabled'}`
+				`**${grp.name}:** ${grp.isEnabledIn(msg.guild) ? 'Etkin' : 'Devre Dışı'}`
 			).join('\n')}
 		`);
 	}
