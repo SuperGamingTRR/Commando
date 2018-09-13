@@ -5,7 +5,7 @@ module.exports = class UnloadCommandCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: 'unload',
-			aliases: ['unload-command', 'devredışıbırak', 'devredışı'],
+			aliases: ['unload-command', 'devredençıkart'],
 			group: 'commands',
 			memberName: 'unload',
 			description: 'Bir komutu devreden çıkarır.',
