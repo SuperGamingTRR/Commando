@@ -78,14 +78,14 @@ module.exports = class HelpCommand extends Command {
 				messages.push(await msg.direct(stripIndents`
 					${oneLine`
 						${msg.guild ? `${msg.guild.name} adlı sunucuda` : 'Herhangi bir sunucuda'} komut kullanmak için,
-						\`${Command.usage('[komut]', msg.guild ? msg.guild.commandPrefix : null, this.client.user)}\` kullanın.
-						Örneğin, \`${Command.usage('prefix', msg.guild ? msg.guild.commandPrefix : null, this.client.user)}\`.
+						${Command.usage('[komut]', msg.guild ? msg.guild.commandPrefix : null, this.client.user)} kullanın.
+						Örneğin, ${Command.usage('prefix', msg.guild ? msg.guild.commandPrefix : null, this.client.user)}.
 					`}
-					Bu DM'de komut kullanmak için, sadece \`${Command.usage('[komut]', null, null)}\`
+					Bu DM'de komut kullanmak için, sadece ${Command.usage('[komut]', null, null)}
 					şeklinde önek kullanmadan yapabilirsiniz.
 
-					\`${this.usage('[komut]', null, null)}\` şeklinde kullanarak bir komut hakkında detaylı bilgi alabilirsiniz.
-					\`${this.usage('tümü', null, null)}\` şeklinde kullanırsanız *tüm* komutlar hakkında yardım alabilirsiniz, 
+					${this.usage('[komut]', null, null)} şeklinde kullanarak bir komut hakkında detaylı bilgi alabilirsiniz.
+					${this.usage('tümü', null, null)} şeklinde kullanırsanız *tüm* komutlar hakkında yardım alabilirsiniz, 
 					sadece kullanılabilir olanlar değil.
 
 					__**${showAll ? 'Tüm komutlar' : `${msg.guild || 'Bu DM'}
