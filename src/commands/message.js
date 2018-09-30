@@ -4,6 +4,43 @@ const Command = require('./base');
 const FriendlyError = require('../errors/friendly');
 const CommandFormatError = require('../errors/command-format');
 const { permissions } = require('../util');
+const { RichEmbed } = require('discord.js');
+
+async function emerr(func, msg, note) {
+	if(note === undefined) {
+		const mesaj = new RichEmbed()
+			.setColor('#e04f5f')
+			.setAuthor('Hata', 'https://cdn.discordapp.com/emojis/493436454350094348.png?v=1')
+			.setTimestamp()
+			.setDescription(msg);
+		await func.channel.send(mesaj);
+	} else {
+		const mesaj = new RichEmbed()
+			.setColor('#e04f5f')
+			.setAuthor('Hata', 'https://cdn.discordapp.com/emojis/493436454350094348.png?v=1')
+			.setDescription(msg)
+			.setFooter(note);
+		await func.channel.send(mesaj);
+	}
+}
+
+async function eminfo(func, msg, note) {
+	if(note === undefined) {
+		const mesaj = new RichEmbed()
+			.setColor('#2196f3')
+			.setAuthor('Bilgilendirme', 'https://cdn.discordapp.com/emojis/493436457646555136.png?v=1')
+			.setTimestamp()
+			.setDescription(msg);
+		await func.channel.send(mesaj);
+	} else {
+		const mesaj = new RichEmbed()
+			.setColor('#2196f3')
+			.setAuthor('Bilgilendirme', 'https://cdn.discordapp.com/emojis/493436457646555136.png?v=1')
+			.setDescription(msg)
+			.setFooter(note);
+		await func.channel.send(mesaj);
+	}
+}
 
 /** A container for a message that triggers a command, that command, and methods to respond */
 class CommandMessage {
@@ -130,20 +167,20 @@ class CommandMessage {
 			 * (built-in reasons are `guildOnly`, `permission`, and `throttling`)
 			 */
 			this.client.emit('commandBlocked', this, 'guildOnly');
-			return this.reply(`\`${this.command.name}\` adlı komut sadece sunucularda kullanılabilir.`);
+			return emerr(this.message, `\`${this.command.name}\` adlı komut sadece sunucularda kullanılabilir.`);
 		}
 
 		if(this.command.nsfw && !this.message.channel.nsfw) {
 			this.client.emit('commandBlocked', this, 'nsfw');
-			return this.reply(`\`${this.command.name}\` adlı komut sadece NSFW kanallarında kullanılabilir.`);
+			return emerr(this.message, `\`${this.command.name}\` adlı komut sadece NSFW kanallarında kullanılabilir.`);
 		}
 
 		// Ensure the user has permission to use the command
 		const hasPermission = this.command.hasPermission(this);
 		if(!hasPermission || typeof hasPermission === 'string') {
 			this.client.emit('commandBlocked', this, 'permission');
-			if(typeof hasPermission === 'string') return this.reply(hasPermission);
-			else return this.reply(`\`${this.command.name}\` adlı komutu kullanmaya izniniz yok.`);
+			if(typeof hasPermission === 'string') return emerr(this.message, hasPermission);
+			else return emerr(this.message, `\`${this.command.name}\` adlı komutu kullanmaya izniniz yok.`);
 		}
 
 		// Ensure the client user has the required permissions
@@ -152,12 +189,12 @@ class CommandMessage {
 			if(missing.length > 0) {
 				this.client.emit('commandBlocked', this, 'clientPermissions');
 				if(missing.length === 1) {
-					return this.reply(
+					return emerr(this.message,
 						oneLine`\`${this.command.name}\` adlı komutu çalıştırabilmek için
 						"${permissions[missing[0]]}" adlı izne ihtiyacım var.`
 					);
 				}
-				return this.reply(oneLine`
+				return emerr(this.message, oneLine`
 					\`${this.command.name}\` adlı komutu çalıştırabilmek için bu izinlere ihtiyacım var:
 					${missing.map(perm => permissions[perm]).join(', ')}
 				`);
@@ -169,7 +206,7 @@ class CommandMessage {
 		if(throttle && throttle.usages + 1 > this.command.throttling.usages) {
 			const remaining = (throttle.start + (this.command.throttling.duration * 1000) - Date.now()) / 1000;
 			this.client.emit('commandBlocked', this, 'throttling');
-			return this.reply(
+			return emerr(this.message,
 				`\`${this.command.name}\` adlı komutu tekrar kullanabilmek için ${remaining.toFixed(1)} saniye beklemelisiniz.`
 			);
 		}
@@ -185,9 +222,9 @@ class CommandMessage {
 			if(result.cancelled) {
 				if(result.prompts.length === 0) {
 					const err = new CommandFormatError(this);
-					return this.reply(err.message);
+					return emerr(this.message, err.message);
 				}
-				return this.reply('Komut iptal edildi.');
+				return eminfo(this.message, 'Komut iptal edildi.');
 			}
 			args = result.values;
 		}
@@ -232,7 +269,7 @@ class CommandMessage {
 			this.client.emit('commandError', this.command, err, this, args, fromPattern);
 			if(this.message.channel.typingCount > typingCount) this.message.channel.stopTyping();
 			if(err instanceof FriendlyError) {
-				return this.reply(err.message);
+				return emerr(this.message, err.message);
 			} else {
 				const owners = this.client.owners;
 				let ownerList = owners ? owners.map((usr, i) => {
@@ -241,7 +278,7 @@ class CommandMessage {
 				}).join(owners.length > 2 ? ', ' : ' ') : '';
 
 				const invite = this.client.options.invite;
-				return this.reply(stripIndents`
+				return emerr(this.message, stripIndents`
 					Komut çalıştırılırken bir hata oluştu:
 					\`${err.name}: ${err.message}\`
 					Böyle bir hata almamanız gerekiyordu.

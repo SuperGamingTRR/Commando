@@ -1,6 +1,25 @@
 const { escapeMarkdown } = require('discord.js');
 const { oneLine, stripIndents } = require('common-tags');
 const ArgumentUnionType = require('../types/union');
+const { RichEmbed } = require('discord.js');
+
+async function emwarn(func, message, note) {
+	const mesaj = new RichEmbed()
+		.setColor('#ffc107')
+		.setAuthor('Uyarı', 'https://cdn.discordapp.com/emojis/493436455394344972.png?v=1')
+		.setDescription(message)
+		.setFooter(note);
+	await func.channel.send(mesaj);
+}
+
+async function eminfo(func, message, note) {
+	const mesaj = new RichEmbed()
+		.setColor('#2196f3')
+		.setAuthor('Bilgilendirme', 'https://cdn.discordapp.com/emojis/493436457646555136.png?v=1')
+		.setDescription(message)
+		.setFooter(note);
+	await func.channel.send(mesaj);
+}
 
 /** A fancy argument */
 class Argument {
@@ -178,14 +197,32 @@ class Argument {
 			}
 
 			// Prompt the user for a new value
-			prompts.push(await msg.reply(stripIndents`
+			if(empty) {
+				prompts.push(
+					await eminfo(msg, stripIndents`
+						${this.prompt}
+					`, stripIndents`
+					${oneLine`
+						Komutu iptal etmek için \`iptal\` diye cevaplayın.
+						${wait ? `Komut ${this.wait} saniye sonra otomatik olarak iptal edilecektir.` : ''}
+					`}
+					`)
+				);
+			} else {
+				prompts.push(
+				await emwarn(msg, stripIndents`
 				${empty ? this.prompt : valid ? valid : `Geçersiz bir ${this.label} girdiniz. Lütfen tekrar deneyin.`}
+				`, stripIndents`
 				${oneLine`
 					Komutu iptal etmek için \`iptal\` diye cevaplayın.
 					${wait ? `Komut ${this.wait} saniye sonra otomatik olarak iptal edilecektir.` : ''}
 				`}
-			`));
-
+			`, stripIndents`
+				${oneLine`
+				Komutu iptal etmek için\`iptal\` diye cevaplayın.
+				${wait ? `Komut ${this.wait} saniye sonra otomatik olarak iptal edilecektir.` : ''}
+			`}`));
+			}
 			// Get the user's response
 			const responses = await msg.channel.awaitMessages(msg2 => msg2.author.id === msg.author.id, {
 				maxMatches: 1,
@@ -263,20 +300,22 @@ class Argument {
 				// Prompt the user for a new value
 				if(value) {
 					const escaped = escapeMarkdown(value).replace(/@/g, '@\u200b');
-					prompts.push(await msg.reply(stripIndents`
+					prompts.push(await emwarn(msg, stripIndents`
 						${valid ? valid : oneLine`
 							Geçersiz bir ${this.label} girdiniz,
 							"${escaped.length < 1850 ? escaped : '[göstermek için çok uzun]'}".
 							Lütfen tekrar deneyin.
 						`}
+					`, stripIndents`
 						${oneLine`
 							\`iptal\` yazarak komutu iptal edebilir, yada \`bitir\` yazarak bu noktada giriş yapmayı bitirebilirsiniz.
 							${wait ? `Komut ${this.wait} saniye sonra otomatik olarak iptal edilecektir.` : ''}
 						`}
 					`));
 				} else if(results.length === 0) {
-					prompts.push(await msg.reply(stripIndents`
+					prompts.push(await eminfo(msg, stripIndents`
 						${this.prompt}
+					`, stripIndents`
 						${oneLine`
 							\`iptal\` yazarak komutu iptal edebilir, yada \`bitir\` yazarak giriş yapmayı bitirebilirsiniz.
 							${wait ? `Komut ${this.wait} saniye sonra cevap vermezseniz otomatik olarak iptal edilecektir.` : ''}
